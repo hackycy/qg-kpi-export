@@ -45,7 +45,7 @@ const handleReset = () => {
   <div class="min-h-screen bg-background">
     <!-- 头部 -->
     <header class="bg-card border-b border-border sticky top-0 z-10">
-      <div class="max-w-4xl mx-auto px-4 py-4">
+      <div class="max-w-7xl mx-auto px-4 py-4">
         <div class="flex items-center justify-between">
           <h1 class="text-xl sm:text-2xl font-bold text-foreground">KPI日报导出工具</h1>
           <div class="flex items-center gap-2">
@@ -65,7 +65,7 @@ const handleReset = () => {
     </header>
 
     <!-- 主要内容 -->
-    <main class="max-w-4xl mx-auto px-4 py-6 space-y-6">
+    <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
       <!-- 错误提示 -->
       <Alert v-if="error" variant="destructive">
         <AlertTitle>解析错误</AlertTitle>
@@ -73,7 +73,7 @@ const handleReset = () => {
       </Alert>
 
       <!-- 文件上传区域 -->
-      <div v-if="excelData.length === 0" class="max-w-2xl mx-auto space-y-6">
+      <div v-if="excelData.length === 0" class="max-w-4xl mx-auto space-y-6">
         <FileUpload 
           @file-selected="handleFileSelected" 
           @error="handleFileError"

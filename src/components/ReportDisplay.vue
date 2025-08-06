@@ -3,7 +3,7 @@
     <!-- 筛选器 -->
     <Card>
       <CardContent class="p-4 sm:p-6">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <div>
             <label class="block text-sm font-medium text-foreground mb-2">
               负责人
@@ -66,22 +66,22 @@
     </Card>
 
     <!-- 日报列表 -->
-    <div v-if="formattedReports.length > 0" class="space-y-4">
+    <div v-if="formattedReports.length > 0" class="grid grid-cols-1 xl:grid-cols-2 gap-6">
       <Card
         v-for="report in formattedReports"
         :key="report.date"
-        class="hover:shadow-md transition-shadow"
+        class="report-card hover:shadow-lg transition-all duration-200 border-2 hover:border-primary/20"
       >
-        <CardHeader class="pb-3">
+        <CardHeader class="pb-4">
           <div class="flex items-center justify-between">
-            <CardTitle class="text-lg">
+            <CardTitle class="text-lg font-semibold text-foreground">
               {{ report.displayDate }}
             </CardTitle>
             <Button
               @click="copySingleDay(report.content, report.displayDate)"
               variant="outline"
               size="sm"
-              class="h-8"
+              class="h-8 px-3"
             >
               <Copy class="w-3 h-3 mr-1" />
               复制
@@ -90,11 +90,11 @@
         </CardHeader>
         
         <CardContent class="pt-0">
-          <div class="space-y-3">
+          <div class="space-y-4">
             <div
               v-for="(content, index) in report.content"
               :key="index"
-              class="text-sm text-muted-foreground bg-muted/50 p-3 rounded-md border-l-4 border-primary/50"
+              class="daily-report-item text-sm text-foreground bg-muted/30 p-4 rounded-md border-l-4 border-primary/60 shadow-sm hover:shadow-md transition-shadow duration-200"
             >
               {{ content }}
             </div>
