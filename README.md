@@ -1,39 +1,88 @@
-# .
+# KPI日报导出工具
 
-This template should help get you started developing with Vue 3 in Vite.
+这是一个基于Vue 3 + TypeScript + Tailwind CSS开发的KPI日报导出工具。
 
-## Recommended IDE Setup
+## 功能特性
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- 🚀 支持拖拽或点击选择Excel文件上传
+- 📊 解析Excel中的"任务拆解"工作表
+- 👥 按负责人筛选数据
+- 📅 按月份筛选数据
+- 📋 自动生成日报格式
+- 📝 单天或整月日报一键复制
+- ⚡ 高性能Excel解析
 
-## Type Support for `.vue` Imports in TS
+## 使用说明
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+### Excel文件要求
 
-## Customize configuration
+1. Excel文件必须包含名为"任务拆解"的工作表
+2. 工作表必须包含以下列（顺序可以不同）：
+   - **票务系统**：作为日报内容
+   - **负责人**：用于筛选
+   - **计划结束日期**：用于按月份分组
+   - **进展**：必填字段
+3. 支持的日期格式：
+   - `2025-08-01 20:22`
+   - `2025/8/1 20:22:00`
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+### 使用流程
 
-## Project Setup
+1. **上传文件**：拖拽或点击选择Excel文件
+2. **选择筛选条件**：选择负责人和月份
+3. **查看日报**：系统自动按天分组显示日报内容
+4. **复制内容**：
+   - 点击单天的"复制"按钮复制当天日报
+   - 点击"复制全部"按钮复制整月日报
 
-```sh
+## 技术栈
+
+- **前端框架**：Vue 3 + TypeScript
+- **构建工具**：Vite
+- **样式框架**：Tailwind CSS
+- **Excel解析**：xlsx
+- **日期处理**：dayjs
+- **图标库**：lucide-vue-next
+
+## 开发
+
+```bash
+# 安装依赖
 pnpm install
-```
 
-### Compile and Hot-Reload for Development
-
-```sh
+# 启动开发服务器
 pnpm dev
-```
 
-### Type-Check, Compile and Minify for Production
-
-```sh
+# 构建生产版本
 pnpm build
+
+# 预览生产版本
+pnpm preview
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+## 复制格式
 
-```sh
-pnpm lint
+### 单天日报格式
 ```
+8月1日
+任务内容1
+任务内容2
+```
+
+### 整月日报格式
+```
+8月1日
+任务内容1
+任务内容2
+
+8月2日
+任务内容3
+任务内容4
+```
+
+## 注意事项
+
+1. Excel文件大小建议不超过10MB
+2. 支持.xlsx和.xls格式
+3. 确保浏览器支持Clipboard API（用于复制功能）
+4. 日期列中的无效日期将被忽略
