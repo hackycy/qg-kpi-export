@@ -1,17 +1,17 @@
 <template>
-  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
-      <div class="flex items-center space-x-3">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+  <div class="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <Card class="w-auto max-w-sm">
+      <CardContent class="flex items-center space-x-4 p-6">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         <div>
-          <h3 class="text-lg font-medium text-gray-900">正在解析Excel文件</h3>
-          <p class="text-sm text-gray-500">请稍候...</p>
+          <h3 class="text-base font-medium">正在解析Excel文件</h3>
+          <p class="text-sm text-muted-foreground">请稍候...</p>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   </div>
 </template>
 
 <script setup lang="ts">
-// 无需额外逻辑
+import { Card, CardContent } from '@/components/ui/card';
 </script>
