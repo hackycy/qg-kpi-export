@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { useExcelParser } from '@/composables/useExcelParser';
-import FileUpload from '@/components/FileUpload.vue';
-import ReportDisplay from '@/components/ReportDisplay.vue';
-import LoadingSpinner from '@/components/LoadingSpinner.vue';
-import ThemeToggle from '@/components/ThemeToggle.vue';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useExcelParser } from '@/composables/useExcelParser'
+import FileUpload from '@/components/FileUpload.vue'
+import ReportDisplay from '@/components/ReportDisplay.vue'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
+import ThemeToggle from '@/components/ThemeToggle.vue'
+import { Button } from '@/components/ui/button'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 const {
   isLoading,
@@ -20,25 +20,25 @@ const {
   parseExcel,
   copySingleDay,
   copyAllDays,
-  reset
-} = useExcelParser();
+  reset,
+} = useExcelParser()
 
 const handleFileSelected = async (file: File) => {
   try {
-    await parseExcel(file);
+    await parseExcel(file)
   } catch (err) {
-    console.error('解析文件失败:', err);
+    console.error('解析文件失败:', err)
   }
-};
+}
 
 const handleFileError = (message: string) => {
   // 这里可以设置一个临时错误状态，或者使用toast通知
-  console.error('文件错误:', message);
-};
+  console.error('文件错误:', message)
+}
 
 const handleReset = () => {
-  reset();
-};
+  reset()
+}
 </script>
 
 <template>
@@ -74,11 +74,8 @@ const handleReset = () => {
 
       <!-- 文件上传区域 -->
       <div v-if="excelData.length === 0" class="max-w-4xl mx-auto space-y-6">
-        <FileUpload 
-          @file-selected="handleFileSelected" 
-          @error="handleFileError"
-        />
-        
+        <FileUpload @file-selected="handleFileSelected" @error="handleFileError" />
+
         <Card>
           <CardHeader>
             <CardTitle class="text-lg">使用说明</CardTitle>

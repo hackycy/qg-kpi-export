@@ -50,6 +50,19 @@
   }
 }
 
+/* 支持手动切换的暗色模式 */
+.dark {
+  --color-background: var(--vt-c-black);
+  --color-background-soft: var(--vt-c-black-soft);
+  --color-background-mute: var(--vt-c-black-mute);
+
+  --color-border: var(--vt-c-divider-dark-2);
+  --color-border-hover: var(--vt-c-divider-dark-1);
+
+  --color-heading: var(--vt-c-text-dark-1);
+  --color-text: var(--vt-c-text-dark-2);
+}
+
 *,
 *::before,
 *::after {
@@ -60,8 +73,9 @@
 
 body {
   min-height: 100vh;
-  color: var(--color-text);
-  background: var(--color-background);
+  /* 移除这些样式，让Tailwind接管 */
+  /* color: var(--color-text); */
+  /* background: var(--color-background); */
   transition:
     color 0.5s,
     background-color 0.5s;
