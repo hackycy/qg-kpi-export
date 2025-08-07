@@ -109,7 +109,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { Copy, Calendar } from 'lucide-vue-next'
 import dayjs from 'dayjs'
 import { Button } from '@/components/ui/button'
@@ -151,6 +151,17 @@ const totalReports = computed(() => {
   return props.formattedReports.reduce((total, report) => {
     return total + report.content.length
   }, 0)
+})
+
+// 计算上个月的年月字符串 (YYYY-MM格式)
+const getLastMonth = () => {
+  return dayjs().subtract(1, 'month').format('YYYY-MM')
+}
+
+// 组件挂载时默认选择上个月
+onMounted(() => {
+  const lastMonth = getLastMonth()
+  emit('update:selectedMonth', lastMonth)
 })
 
 const formatMonth = (month: string) => {
