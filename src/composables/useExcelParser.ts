@@ -1,7 +1,59 @@
 import { ref, computed } from 'vue';
+import { useClipboard } from '@vueuse/core';
 import dayjs from 'dayjs';
 import * as XLSX from 'xlsx';
 import type { ExcelRow, MonthlyReport } from '@/types';
+
+// 简单的通知函数
+const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
+  // 创建通知元素
+  const notification = document.createElement('div');
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: ${type === 'success' ? '#10b981' : '#ef4444'};
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 9999;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.3s ease-out;
+    max-width: 300px;
+  `;
+
+  // 添加动画样式
+  if (!document.getElementById('notification-styles')) {
+    const style = document.createElement('style');
+    style.id = 'notification-styles';
+    style.textContent = `
+      @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+      @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  notification.textContent = message;
+  document.body.appendChild(notification);
+
+  // 3秒后移除通知
+  setTimeout(() => {
+    notification.style.animation = 'slideOut 0.3s ease-in';
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.parentNode.removeChild(notification);
+      }
+    }, 300);
+  }, 3000);
+};
 
 export function useExcelParser() {
   const isLoading = ref(false);
@@ -9,6 +61,9 @@ export function useExcelParser() {
   const excelData = ref<ExcelRow[]>([]);
   const selectedResponsible = ref<string>('');
   const selectedMonth = ref<string>('');
+
+  // 使用 VueUse 的剪切板功能
+  const { copy, isSupported } = useClipboard();
 
   // 获取所有负责人列表
   const responsibleList = computed(() => {
@@ -207,25 +262,75 @@ export function useExcelParser() {
   };
 
   // 复制单天内容
-  const copySingleDay = (content: string[], displayDate: string) => {
+  const copySingleDay = async (content: string[], displayDate: string) => {
     const text = `${displayDate}\n${content.join('\n')}`;
-    navigator.clipboard.writeText(text).then(() => {
-      alert('已复制到剪贴板');
-    }).catch(() => {
-      alert('复制失败，请手动复制');
-    });
+
+    try {
+      if (isSupported.value) {
+        await copy(text);
+        showNotification('已复制到剪贴板');
+      } else {
+        // 降级处理：使用传统的复制方法
+        await navigator.clipboard.writeText(text);
+        showNotification('已复制到剪贴板');
+      }
+    } catch (err) {
+      console.error('复制失败:', err);
+      // 最后的降级方案：创建一个临时的 textarea 元素
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showNotification('已复制到剪贴板');
+      } catch (fallbackErr) {
+        console.error('降级复制也失败:', fallbackErr);
+        showNotification('复制失败，请手动复制', 'error');
+      }
+    }
   };
 
   // 复制全月内容
-  const copyAllDays = () => {
+  const copyAllDays = async () => {
     const allText = formattedReports.value
       .map(report => `${report.displayDate}\n${report.content.join('\n')}`)
       .join('\n\n');
-    navigator.clipboard.writeText(allText).then(() => {
-      alert('已复制到剪贴板');
-    }).catch(() => {
-      alert('复制失败，请手动复制');
-    });
+
+    try {
+      if (isSupported.value) {
+        await copy(allText);
+        showNotification('已复制到剪贴板');
+      } else {
+        // 降级处理：使用传统的复制方法
+        await navigator.clipboard.writeText(allText);
+        showNotification('已复制到剪贴板');
+      }
+    } catch (err) {
+      console.error('复制失败:', err);
+      // 最后的降级方案：创建一个临时的 textarea 元素
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = allText;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showNotification('已复制到剪贴板');
+      } catch (fallbackErr) {
+        console.error('降级复制也失败:', fallbackErr);
+        showNotification('复制失败，请手动复制', 'error');
+      }
+    }
   };
 
   // 重置数据
