@@ -1,7 +1,7 @@
 <template>
-  <div class="space-y-6">
+  <div class="space-y-8">
     <!-- 筛选器 -->
-    <Card>
+    <Card class="shadow-sm">
       <CardContent class="p-4 sm:p-6">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <div>
@@ -46,8 +46,8 @@
     </Card>
 
     <!-- 统计信息 -->
-    <Card v-if="formattedReports.length > 0" class="bg-primary/5">
-      <CardContent class="p-4">
+    <Card v-if="formattedReports.length > 0" class="bg-primary/5 shadow-sm">
+      <CardContent class="p-4 sm:p-6">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div class="text-sm text-muted-foreground flex flex-wrap items-center gap-2">
             <span>共找到 {{ formattedReports.length }} 天的日报记录</span>
@@ -66,11 +66,11 @@
     </Card>
 
     <!-- 日报列表 -->
-    <div v-if="formattedReports.length > 0" class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+    <div v-if="formattedReports.length > 0" class="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
       <Card
         v-for="report in formattedReports"
         :key="report.date"
-        class="report-card hover:shadow-lg transition-all duration-200 border-2 hover:border-primary/20"
+        class="report-card hover:shadow-lg transition-all duration-200 border-2 hover:border-primary/20 shadow-sm"
       >
         <CardHeader class="pb-4">
           <div class="flex items-center justify-between">
@@ -104,7 +104,7 @@
     </div>
 
     <!-- 空状态 -->
-    <Card v-else class="text-center py-12">
+    <Card v-else class="text-center py-12 shadow-sm">
       <CardContent>
         <Calendar class="w-16 h-16 mx-auto mb-4 text-muted-foreground/50" />
         <CardTitle class="text-lg mb-2 text-muted-foreground">暂无日报数据</CardTitle>

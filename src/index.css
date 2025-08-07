@@ -36,6 +36,10 @@
     margin-top: 1.5rem;
   }
 
+  .space-y-8 > * + * {
+    margin-top: 2rem;
+  }
+
   /* 优化文字大小 */
   h1 {
     font-size: 1.25rem !important;
@@ -49,6 +53,49 @@
   /* 优化弹性布局 */
   .flex-col-reverse-mobile {
     flex-direction: column-reverse;
+  }
+
+  /* 移动端主要内容区域优化 */
+  /* 移除可能冲突的样式，让Tailwind接管 */
+  
+  /* 移动端日报列表网格间距 */
+  .grid.gap-4 {
+    gap: 1rem;
+  }
+
+  .grid.gap-6 {
+    gap: 1.5rem;
+  }
+
+  .grid.gap-8 {
+    gap: 1.5rem;
+  }
+
+  /* 确保移动端内容居中 */
+  .max-w-4xl {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* 平板端优化 */
+@media (min-width: 641px) and (max-width: 1023px) {
+  /* 平板端卡片间距 */
+  .space-y-8 > * + * {
+    margin-top: 2rem;
+  }
+
+  /* 平板端日报列表网格间距 */
+  .grid.gap-4 {
+    gap: 1.25rem;
+  }
+
+  .grid.gap-6 {
+    gap: 2rem;
+  }
+
+  .grid.gap-8 {
+    gap: 2rem;
   }
 }
 
@@ -69,6 +116,16 @@
   .report-card:hover {
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
     transform: translateY(-2px);
+  }
+
+  /* 卡片间距优化 */
+  .space-y-8 > * + * {
+    margin-top: 2.5rem;
+  }
+
+  /* 日报列表网格间距 */
+  .grid.gap-8 {
+    gap: 2.5rem;
   }
 }
 

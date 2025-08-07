@@ -42,69 +42,77 @@ const handleReset = () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-background">
+  <div class="min-h-screen bg-background flex flex-col">
     <!-- 头部 -->
     <header class="bg-card border-b border-border sticky top-0 z-10">
-      <div class="max-w-7xl mx-auto px-4 py-4">
-        <div class="flex items-center justify-between">
-          <h1 class="text-xl sm:text-2xl font-bold text-foreground">KPI日报导出工具</h1>
-          <div class="flex items-center gap-2">
-            <ThemeToggle />
-            <Button
-              v-if="excelData.length > 0"
-              @click="handleReset"
-              variant="outline"
-              size="sm"
-              class="h-9"
-            >
-              重新上传
-            </Button>
+      <div class="w-full flex justify-center">
+        <div class="w-full max-w-7xl px-4 py-4">
+          <div class="flex items-center justify-between">
+            <h1 class="text-xl sm:text-2xl font-bold text-foreground">KPI日报导出工具</h1>
+            <div class="flex items-center gap-2">
+              <ThemeToggle />
+              <Button
+                v-if="excelData.length > 0"
+                @click="handleReset"
+                variant="outline"
+                size="sm"
+                class="h-9"
+              >
+                重新上传
+              </Button>
+            </div>
           </div>
         </div>
       </div>
     </header>
 
     <!-- 主要内容 -->
-    <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
-      <!-- 错误提示 -->
-      <Alert v-if="error" variant="destructive">
-        <AlertTitle>解析错误</AlertTitle>
-        <AlertDescription>{{ error }}</AlertDescription>
-      </Alert>
+    <main class="flex-1 w-full flex justify-center">
+      <div class="w-full max-w-7xl px-4 py-6">
+        <div class="space-y-8">
+          <!-- 错误提示 -->
+          <Alert v-if="error" variant="destructive" class="mb-8">
+            <AlertTitle>解析错误</AlertTitle>
+            <AlertDescription>{{ error }}</AlertDescription>
+          </Alert>
 
-      <!-- 文件上传区域 -->
-      <div v-if="excelData.length === 0" class="max-w-4xl mx-auto space-y-6">
-        <FileUpload @file-selected="handleFileSelected" @error="handleFileError" />
+          <!-- 文件上传区域 -->
+          <div v-if="excelData.length === 0" class="flex justify-center">
+            <div class="w-full max-w-4xl space-y-8">
+              <FileUpload @file-selected="handleFileSelected" @error="handleFileError" />
 
-        <Card>
-          <CardHeader>
-            <CardTitle class="text-lg">使用说明</CardTitle>
-          </CardHeader>
-          <CardContent class="space-y-3">
-            <div class="text-sm text-muted-foreground space-y-2">
-              <p>1. 请上传包含"任务拆解"工作表的Excel文件</p>
-              <p>2. 工作表需包含以下列：票务系统、负责人、计划结束日期、进展</p>
-              <p>3. 支持的日期格式：2025-08-01 20:22 或 2025/8/1 20:22:00</p>
-              <p>4. 选择负责人和月份后，将显示该月份的日报数据</p>
-              <p>5. 可以单独复制每天的日报，也可以一次性复制整月日报</p>
+              <Card class="shadow-sm">
+                <CardHeader>
+                  <CardTitle class="text-lg">使用说明</CardTitle>
+                </CardHeader>
+                <CardContent class="space-y-3">
+                  <div class="text-sm text-muted-foreground space-y-2">
+                    <p>1. 请上传包含"任务拆解"工作表的Excel文件</p>
+                    <p>2. 工作表需包含以下列：票务系统、负责人、计划结束日期、进展</p>
+                    <p>3. 支持的日期格式：2025-08-01 20:22 或 2025/8/1 20:22:00</p>
+                    <p>4. 选择负责人和月份后，将显示该月份的日报数据</p>
+                    <p>5. 可以单独复制每天的日报，也可以一次性复制整月日报</p>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
 
-      <!-- 报告显示区域 -->
-      <div v-else>
-        <ReportDisplay
-          :formatted-reports="formattedReports"
-          :responsible-list="responsibleList"
-          :month-list="monthList"
-          :selected-responsible="selectedResponsible"
-          :selected-month="selectedMonth"
-          @update:selected-responsible="selectedResponsible = $event"
-          @update:selected-month="selectedMonth = $event"
-          @copy-single-day="copySingleDay"
-          @copy-all-days="copyAllDays"
-        />
+          <!-- 报告显示区域 -->
+          <div v-else class="space-y-8">
+            <ReportDisplay
+              :formatted-reports="formattedReports"
+              :responsible-list="responsibleList"
+              :month-list="monthList"
+              :selected-responsible="selectedResponsible"
+              :selected-month="selectedMonth"
+              @update:selected-responsible="selectedResponsible = $event"
+              @update:selected-month="selectedMonth = $event"
+              @copy-single-day="copySingleDay"
+              @copy-all-days="copyAllDays"
+            />
+          </div>
+        </div>
       </div>
     </main>
 
