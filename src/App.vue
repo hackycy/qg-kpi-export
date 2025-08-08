@@ -3,13 +3,13 @@ import { useRouter } from 'vue-router'
 import { useExcelParser } from '@/composables/useExcelParser'
 import ThemeToggle from '@/components/ThemeToggle.vue'
 import { Button } from '@/components/ui/button'
+import { Toaster } from 'vue-sonner'
 
 const router = useRouter()
 const { excelData, reset } = useExcelParser()
 
 const handleReset = () => {
   reset()
-  // 如果不在首页，跳转到首页
   if (router.currentRoute.value.path !== '/') {
     router.push('/')
   }
@@ -17,28 +17,30 @@ const handleReset = () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-background flex flex-col">
+  <div
+    class="min-h-screen bg-gradient-to-br from-background via-background to-background/95 flex flex-col"
+  >
     <!-- 头部 -->
-    <header class="bg-card border-b border-border sticky top-0 z-10">
+    <header
+      class="backdrop-blur supports-[backdrop-filter]:bg-background/70 bg-background/90 border-b border-border sticky top-0 z-50"
+    >
       <div class="w-full flex justify-center">
-        <div class="w-full max-w-7xl px-4 py-4">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-6">
-              <h1 class="text-xl sm:text-2xl font-bold text-foreground">KPI日报导出工具</h1>
-              <nav class="hidden sm:flex items-center gap-4">
-                <RouterLink
-                  to="/"
-                  class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  active-class="text-foreground font-medium"
-                >
-                  首页
+        <div class="w-full max-w-7xl px-4 sm:px-6 py-3 sm:py-4">
+          <div class="flex items-center justify-between gap-4">
+            <div class="flex items-center gap-6 min-w-0">
+              <h1 class="text-lg sm:text-2xl font-bold tracking-tight text-foreground select-none">
+                KPI 日报导出工具
+              </h1>
+              <nav class="hidden md:flex items-center gap-1">
+                <RouterLink to="/" v-slot="{ isActive }">
+                  <Button :variant="isActive ? 'default' : 'ghost'" size="sm" class="px-3"
+                    >首页</Button
+                  >
                 </RouterLink>
-                <RouterLink
-                  to="/about"
-                  class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  active-class="text-foreground font-medium"
-                >
-                  关于
+                <RouterLink to="/about" v-slot="{ isActive }">
+                  <Button :variant="isActive ? 'default' : 'ghost'" size="sm" class="px-3"
+                    >关于</Button
+                  >
                 </RouterLink>
               </nav>
             </div>
@@ -50,9 +52,8 @@ const handleReset = () => {
                 variant="outline"
                 size="sm"
                 class="h-9"
+                >重新上传</Button
               >
-                重新上传
-              </Button>
             </div>
           </div>
         </div>
@@ -61,13 +62,13 @@ const handleReset = () => {
 
     <!-- 主要内容 -->
     <main class="flex-1 w-full flex justify-center">
-      <div class="w-full max-w-7xl px-4 py-6">
+      <div class="w-full max-w-7xl px-4 sm:px-6 py-6 sm:py-8 space-y-6">
         <RouterView />
       </div>
     </main>
+
+    <Toaster position="top-right" rich-colors close-button />
   </div>
 </template>
 
-<style scoped>
-/* 可以在这里添加任何特定的样式 */
-</style>
+<style scoped></style>

@@ -2,57 +2,98 @@ import { ref, computed } from 'vue';
 import { useClipboard } from '@vueuse/core';
 import dayjs from 'dayjs';
 import * as XLSX from 'xlsx';
+// Removed vue-sonner import to avoid toast usage issues
 import type { ExcelRow, MonthlyReport } from '@/types';
 
-// 简单的通知函数
-const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
-  // 创建通知元素
-  const notification = document.createElement('div');
-  notification.style.cssText = `
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: ${type === 'success' ? '#10b981' : '#ef4444'};
-    color: white;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    z-index: 9999;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    animation: slideIn 0.3s ease-out;
-    max-width: 300px;
-  `;
+// 轻量通知容器（支持多条排队）
+const ensureNotifyContainer = () => {
+  let container = document.getElementById('app-mini-toasts');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'app-mini-toasts';
+    container.style.cssText = [
+      'position:fixed',
+      'top:16px',
+      'right:16px',
+      'z-index:9999',
+      'display:flex',
+      'flex-direction:column',
+      'gap:8px',
+      'pointer-events:none',
+    ].join(';');
+    document.body.appendChild(container);
+  }
+  return container;
+};
 
-  // 添加动画样式
-  if (!document.getElementById('notification-styles')) {
+const notify = (message: string, type: 'success' | 'error' = 'success') => {
+  const container = ensureNotifyContainer();
+  const el = document.createElement('div');
+  el.textContent = message;
+  el.style.cssText = [
+    'min-width:200px',
+    'max-width:320px',
+    'padding:10px 14px',
+    'border-radius:10px',
+    'font-size:13px',
+    'line-height:1.4',
+    'font-weight:500',
+    'box-shadow:0 4px 12px rgba(0,0,0,0.15)',
+    'backdrop-filter:blur(6px)',
+    'background:var(--toast-bg,rgba(255,255,255,0.85))',
+    'color:#111',
+    'border:1px solid rgba(0,0,0,0.06)',
+    'display:flex',
+    'align-items:center',
+    'gap:8px',
+    'pointer-events:auto',
+    'position:relative',
+    'overflow:hidden',
+    'animation:toast-in 0.28s cubic-bezier(.22,.9,.31,1.2)',
+  ].join(';');
+  if (window.matchMedia('(prefers-color-scheme: dark)').matches || document.documentElement.classList.contains('dark')) {
+    el.style.background = 'rgba(30,30,32,0.82)';
+    el.style.color = '#f5f5f5';
+    el.style.border = '1px solid rgba(255,255,255,0.08)';
+  }
+  if (type === 'error') {
+    el.style.boxShadow = '0 4px 14px -2px rgba(239,68,68,0.35)';
+    el.style.setProperty('outline', '1px solid rgba(239,68,68,0.35)');
+  }
+  // 进度条
+  const bar = document.createElement('div');
+  bar.style.cssText = [
+    'position:absolute',
+    'left:0',
+    'bottom:0',
+    'height:3px',
+    `background:${type === 'error' ? 'var(--destructive,#ef4444)' : 'var(--primary,#6366f1)'}`,
+    'width:100%',
+    'transform-origin:left',
+    'animation:toast-bar 3.8s linear forwards',
+  ].join(';');
+  el.appendChild(bar);
+  // 图标
+  const icon = document.createElement('span');
+  icon.innerHTML = type === 'error' ? '⚠️' : '✅';
+  icon.style.flexShrink = '0';
+  el.insertBefore(icon, el.firstChild);
+
+  container.appendChild(el);
+
+  const remove = () => {
+    el.style.animation = 'toast-out 0.22s ease forwards';
+    setTimeout(() => el.remove(), 200);
+  };
+  el.addEventListener('click', remove);
+  setTimeout(remove, 4000);
+
+  if (!document.getElementById('toast-anim-styles')) {
     const style = document.createElement('style');
-    style.id = 'notification-styles';
-    style.textContent = `
-      @keyframes slideIn {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-      }
-      @keyframes slideOut {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(100%); opacity: 0; }
-      }
-    `;
+    style.id = 'toast-anim-styles';
+    style.textContent = `@keyframes toast-in{from{opacity:0;transform:translateY(-6px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}@keyframes toast-out{to{opacity:0;transform:translateY(-4px) scale(.96)}}@keyframes toast-bar{to{transform:scaleX(0)}}`;
     document.head.appendChild(style);
   }
-
-  notification.textContent = message;
-  document.body.appendChild(notification);
-
-  // 3秒后移除通知
-  setTimeout(() => {
-    notification.style.animation = 'slideOut 0.3s ease-in';
-    setTimeout(() => {
-      if (notification.parentNode) {
-        notification.parentNode.removeChild(notification);
-      }
-    }, 300);
-  }, 3000);
 };
 
 export function useExcelParser() {
@@ -133,6 +174,7 @@ export function useExcelParser() {
       if (!allowedTypes.includes(file.type)) {
         const errorMsg = '请选择Excel文件（.xlsx或.xls格式）';
         error.value = errorMsg;
+        notify(errorMsg, 'error');
         reject(new Error(errorMsg));
         return;
       }
@@ -240,12 +282,14 @@ export function useExcelParser() {
           }
 
           isLoading.value = false;
+          notify('文件解析成功');
           resolve();
 
         } catch (err) {
           const errorMsg = err instanceof Error ? err.message : '解析Excel文件时出错';
           error.value = errorMsg;
           isLoading.value = false;
+          notify(errorMsg, 'error');
           reject(new Error(errorMsg));
         }
       };
@@ -254,6 +298,7 @@ export function useExcelParser() {
         const errorMsg = '读取文件时出错';
         error.value = errorMsg;
         isLoading.value = false;
+        notify(errorMsg, 'error');
         reject(new Error(errorMsg));
       };
 
@@ -268,12 +313,11 @@ export function useExcelParser() {
     try {
       if (isSupported.value) {
         await copy(text);
-        showNotification('已复制到剪贴板');
       } else {
         // 降级处理：使用传统的复制方法
         await navigator.clipboard.writeText(text);
-        showNotification('已复制到剪贴板');
       }
+      notify('已复制到剪贴板');
     } catch (err) {
       console.error('复制失败:', err);
       // 最后的降级方案：创建一个临时的 textarea 元素
@@ -288,10 +332,10 @@ export function useExcelParser() {
         textArea.select();
         document.execCommand('copy');
         document.body.removeChild(textArea);
-        showNotification('已复制到剪贴板');
+        notify('已复制到剪贴板');
       } catch (fallbackErr) {
         console.error('降级复制也失败:', fallbackErr);
-        showNotification('复制失败，请手动复制', 'error');
+        notify('复制失败，请手动复制', 'error');
       }
     }
   };
@@ -305,12 +349,11 @@ export function useExcelParser() {
     try {
       if (isSupported.value) {
         await copy(allText);
-        showNotification('已复制到剪贴板');
       } else {
         // 降级处理：使用传统的复制方法
         await navigator.clipboard.writeText(allText);
-        showNotification('已复制到剪贴板');
       }
+      notify('已复制到剪贴板');
     } catch (err) {
       console.error('复制失败:', err);
       // 最后的降级方案：创建一个临时的 textarea 元素
@@ -325,10 +368,10 @@ export function useExcelParser() {
         textArea.select();
         document.execCommand('copy');
         document.body.removeChild(textArea);
-        showNotification('已复制到剪贴板');
+        notify('已复制到剪贴板');
       } catch (fallbackErr) {
         console.error('降级复制也失败:', fallbackErr);
-        showNotification('复制失败，请手动复制', 'error');
+        notify('复制失败，请手动复制', 'error');
       }
     }
   };
